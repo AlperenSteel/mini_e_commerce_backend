@@ -1,0 +1,65 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+# Maven derleme çıktıları
+target/
+*.jar
+*.war
+*.ear
+
+# IntelliJ IDEA yapılandırma dosyaları
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse / VS Code yapılandırmaları (varsa)
+.classpath
+.project
+.settings/
+.vscode/
+
+# Log ve geçici dosyalar
+*.log
+*.tmp
+
+# İşletim sistemi kalıntıları
+.DS_Store
+Thumbs.db
+
+# (İsteğe bağlı) Hassas şifre veya API anahtarları içeren ortam dosyaları
+# application-local.properties
+# application-secret.properties
+# .env
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
