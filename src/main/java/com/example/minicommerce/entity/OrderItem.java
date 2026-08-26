@@ -12,11 +12,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderItem {
+public class OrderItem extends BaseEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     private int quantity;
 

@@ -16,10 +16,8 @@ import lombok.Setter;
 // DB bir user satırını alıp fieldlerı (ilgili sütunları (ne kadar sütun var bilmiyor setter kullanacak))
 // dönen objeye yerleştirirken kullanılacak --> Parametresiz constructor ----> Hibernate kullanıyor.
 // Parametreli constructor'u biz kullanıyoruz kodda register endpoint'i ile olacak.
-public class User {
-    @Id
-    @GeneratedValue(strategy  = GenerationType.IDENTITY)
-    private Long id;
+public class User extends BaseEntity {
+
     private String username;
     private String mail;
     private String passwordHash;
