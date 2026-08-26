@@ -2,6 +2,7 @@ package com.example.minicommerce.service;
 
 import com.example.minicommerce.dto.CategoryRequest;
 import com.example.minicommerce.entity.Category;
+import com.example.minicommerce.exception.ResourceNotFoundException;
 import com.example.minicommerce.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
     public Category getById(Long id){
-        return categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Kategori bulunamadı"));
+        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Kategori bulunamadı"));
     }
     public Category create(CategoryRequest request){
 

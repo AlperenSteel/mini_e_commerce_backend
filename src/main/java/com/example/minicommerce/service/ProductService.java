@@ -3,6 +3,7 @@ package com.example.minicommerce.service;
 import com.example.minicommerce.dto.ProductRequest;
 import com.example.minicommerce.entity.Category;
 import com.example.minicommerce.entity.Product;
+import com.example.minicommerce.exception.ResourceNotFoundException;
 import com.example.minicommerce.repository.CategoryRepository;
 import com.example.minicommerce.repository.ProductRepository;
 import lombok.Getter;
@@ -29,13 +30,13 @@ public class ProductService {
         product.setPrice(productRequest.getPrice());
         product.setStock(productRequest.getStock());
         Category category = categoryRepository.findById(productRequest.getCategoryId()).
-                orElseThrow(() -> new RuntimeException("Kategori bulunamadı. "));
+                orElseThrow(() -> new ResourceNotFoundException("Kategori bulunamadı. "));
         product.setCategory(category);
         return productRepository.save(product);
     }
     public Product getById(Long id){
         return productRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Bu id'ye sahioProduct bulunamadı"));
+                -> new ResourceNotFoundException("Bu id'ye sahioProduct bulunamadı"));
     }
     public List<Product> getAllProducts(){
         return productRepository.findAll();
@@ -43,5 +44,5 @@ public class ProductService {
     public void deleteProduct(Long id){
         productRepository.deleteById(id);
     }
-    
+
 }

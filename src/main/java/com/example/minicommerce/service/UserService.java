@@ -2,6 +2,7 @@ package com.example.minicommerce.service;
 
 
 import com.example.minicommerce.entity.User;
+import com.example.minicommerce.exception.ResourceNotFoundException;
 import com.example.minicommerce.repository.UserRepository;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class UserService {
     }
     public User getById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı"));
     }
-    
+
 }

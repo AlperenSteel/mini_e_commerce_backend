@@ -9,9 +9,12 @@ import com.example.minicommerce.entity.OrderItem;
 import com.example.minicommerce.entity.Product;
 import com.example.minicommerce.entity.User;
 import com.example.minicommerce.enums.OrderStatus;
+import com.example.minicommerce.exception.ResourceNotFoundException;
 import com.example.minicommerce.repository.OrderRepository;
 import com.example.minicommerce.repository.ProductRepository;
 import com.example.minicommerce.repository.UserRepository;
+import jakarta.annotation.Resource;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,25 +37,26 @@ public class OrderService {
 
         Order order = new Order();
         order.setUser(user);
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        for(OrderItemRequest itemRequest : orderRequest.getItems()){
-            Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Bu product bulunamadı."));
+        // TODO SOR BURAYI
+        List<OrderItem> OrderItemlist = new ArrayList<>();
+        for(OrderItemRequest orderItems: orderRequest.getItems()){
+            Product product = productRepository.findById(orderItems.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Bu product bulunamadı"));
             OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
+            orderItem.setQuantity(orderItems.getQuantity());
             orderItem.setProduct(product);
             orderItem.setOrderPrice(product.getPrice());
-            orderItem.setQuantity(itemRequest.getQuantity());
-            orderItems.add(orderItem);
+            orderItem.setOrder(order);
+            OrderItemlist.add(orderItem);
         }
-        order.setItems(orderItems);
+        order.setItems(OrderItemlist);
         orderRepository.save(order);
+
         return order;
     }
     public Order getById(Long id){
         return orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Bu id de Order yok"));
+                .orElseThrow(() -> new ResourceNotFoundException("Bu id de Order yok"));
     }
     public List<Order> getAllOrders(){
         return orderRepository.findAll();
@@ -61,7 +65,7 @@ public class OrderService {
         return orderRepository.findAllByUser(user);
     }
     public Order updateStatus(Long id, OrderStatus status){
-        Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Bu Order bulunamadı"));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Bu Order bulunamadı"));
         order.setStatus(status);
         return orderRepository.save(order);
     }
