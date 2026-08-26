@@ -8,10 +8,10 @@ import com.example.minicommerce.entity.Order;
 import com.example.minicommerce.entity.OrderItem;
 import com.example.minicommerce.entity.Product;
 import com.example.minicommerce.entity.User;
+import com.example.minicommerce.enums.OrderStatus;
 import com.example.minicommerce.repository.OrderRepository;
 import com.example.minicommerce.repository.ProductRepository;
 import com.example.minicommerce.repository.UserRepository;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -60,7 +60,12 @@ public class OrderService {
     public List<Order> getUserOrders(User user){
         return orderRepository.findAllByUser(user);
     }
-    
+    public Order updateStatus(Long id, OrderStatus status){
+        Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Bu Order bulunamadı"));
+        order.setStatus(status);
+        return orderRepository.save(order);
+    }
+
 
 
 
