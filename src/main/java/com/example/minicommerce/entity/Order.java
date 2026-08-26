@@ -27,9 +27,10 @@ public class Order {
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus status = OrderStatus.PENDING;
 
-    @OneToMany(mappedBy = "order")
+    // Order oluştuturlunca order itemlar da oluşturulsun silinince onlar da silinsin diye yapıyoruz.
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     List<OrderItem> items;
 
     //TODO ÖNEMLİ

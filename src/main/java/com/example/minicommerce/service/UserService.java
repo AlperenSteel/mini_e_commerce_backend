@@ -7,6 +7,8 @@ import com.example.minicommerce.repository.UserRepository;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class UserService {
@@ -19,6 +21,9 @@ public class UserService {
     public User getById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı"));
+    }
+    public List<User> getAll(){
+        return userRepository.findAll();
     }
 
 }

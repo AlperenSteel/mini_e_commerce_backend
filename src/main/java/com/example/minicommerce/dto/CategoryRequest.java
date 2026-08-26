@@ -9,6 +9,4 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CategoryRequest {
     private String name;
-
-
 }
