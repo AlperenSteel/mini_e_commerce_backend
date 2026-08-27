@@ -4,6 +4,7 @@ import com.example.minicommerce.dto.CategoryRequest;
 import com.example.minicommerce.dto.CategoryResponse;
 import com.example.minicommerce.entity.Category;
 import com.example.minicommerce.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class CategoryController {
         categoryService.delete(id);
     }
     @PostMapping
-    public CategoryResponse create(@RequestBody CategoryRequest category){
+    public CategoryResponse create(@Valid @RequestBody CategoryRequest category){
         return categoryService.create(category);
     }
 

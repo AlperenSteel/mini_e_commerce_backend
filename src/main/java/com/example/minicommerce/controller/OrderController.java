@@ -8,12 +8,14 @@ import com.example.minicommerce.entity.User;
 import com.example.minicommerce.enums.OrderStatus;
 import com.example.minicommerce.repository.OrderRepository;
 import com.example.minicommerce.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
+@Valid
 public class OrderController {
     private final OrderService orderService;
 
@@ -30,7 +32,7 @@ public class OrderController {
         return orderService.getById(id);
     }
     @PostMapping("")
-    public OrderResponse create(@RequestBody OrderRequest orderRequest){
+    public OrderResponse create(@Valid @RequestBody OrderRequest orderRequest){
         return orderService.create(orderRequest, null);
     }
     @GetMapping("/user")
@@ -38,7 +40,7 @@ public class OrderController {
         return orderService.getUserOrders(user);
     }
     @PatchMapping("{id}/status")
-    public OrderResponse updateStatus(@PathVariable Long id, @RequestBody OrderStatus status){
+    public OrderResponse updateStatus(@Valid @PathVariable Long id, @RequestBody OrderStatus status){
         return orderService.updateStatus(id, status);
     }
 }

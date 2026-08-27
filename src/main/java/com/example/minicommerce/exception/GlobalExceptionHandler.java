@@ -3,6 +3,7 @@ package com.example.minicommerce.exception;
 
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -29,5 +30,14 @@ public class GlobalExceptionHandler {
         errorResponse.setStatus(404);
 
         return ResponseEntity.status(404).body(errorResponse);
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(ex.getMessage());
+        errorResponse.setTimestamp(LocalDateTime.now());
+        errorResponse.setStatus(400);
+
+        return ResponseEntity.status(400).body(errorResponse);
     }
 }

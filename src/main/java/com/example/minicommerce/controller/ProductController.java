@@ -5,9 +5,11 @@ import com.example.minicommerce.dto.ProductRequest;
 import com.example.minicommerce.dto.ProductResponse;
 import com.example.minicommerce.entity.Product;
 import com.example.minicommerce.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/products")
@@ -26,7 +28,7 @@ public class ProductController {
         return productService.getById(id);
     }
     @PostMapping("")
-    public ProductResponse create(@RequestBody ProductRequest product){
+    public ProductResponse create(@Valid @RequestBody ProductRequest product){
         return productService.create(product);
     }
     @DeleteMapping("/{id}")
