@@ -1,19 +1,20 @@
 package com.example.minicommerce.dto;
 
-import com.example.minicommerce.enums.Role;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserResponse {
+public class ProductResponse {
 
     private Long id;
-    private String username;
-    private String mail;
-    private Role role;
+    private String name;
+    private String description;
+    private int stock;
+    private Double price;
+    private CategoryResponse category;
 
 }
