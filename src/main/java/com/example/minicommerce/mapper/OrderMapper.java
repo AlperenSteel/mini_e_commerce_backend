@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(uses = OrderItemMapper.class)
+@Mapper(componentModel = "spring", uses = OrderItemMapper.class)
 public interface OrderMapper {
     OrderResponse toResponse(Order order);
     List<OrderResponse> toResponseList(List<Order> orders);

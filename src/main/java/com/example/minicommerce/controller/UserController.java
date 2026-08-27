@@ -1,5 +1,6 @@
 package com.example.minicommerce.controller;
 
+import com.example.minicommerce.dto.UserResponse;
 import com.example.minicommerce.entity.User;
 import com.example.minicommerce.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,14 +20,13 @@ public class UserController {
         }
 
         @GetMapping("")
-        public List<User> getAll() {
+        public List<UserResponse> getAll() {
             return userService.getAll();
         }
 
         @GetMapping("/{id}")
-        public User getById(@PathVariable Long id) {
+        public UserResponse getById(@PathVariable Long id) {
             return userService.getById(id);
         }
     }
-}
 

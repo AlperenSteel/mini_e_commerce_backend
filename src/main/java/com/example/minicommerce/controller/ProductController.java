@@ -2,6 +2,7 @@ package com.example.minicommerce.controller;
 
 
 import com.example.minicommerce.dto.ProductRequest;
+import com.example.minicommerce.dto.ProductResponse;
 import com.example.minicommerce.entity.Product;
 import com.example.minicommerce.service.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +18,15 @@ public class ProductController {
         this.productService = productService;
     }
     @GetMapping("")
-    public List<Product> getAllProducts(){
+    public List<ProductResponse> getAllProducts(){
         return productService.getAllProducts();
     }
     @GetMapping("/{id}")
-    public Product getById(@PathVariable Long id){
+    public ProductResponse getById(@PathVariable Long id){
         return productService.getById(id);
     }
     @PostMapping("")
-    public Product create(@RequestBody ProductRequest product){
+    public ProductResponse create(@RequestBody ProductRequest product){
         return productService.create(product);
     }
     @DeleteMapping("/{id}")

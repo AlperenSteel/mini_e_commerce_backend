@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(uses = ProductMapper.class)
+@Mapper(componentModel = "spring", uses = ProductMapper.class)
 public interface OrderItemMapper {
     OrderItemResponse toResponse(OrderItem orderItem);
     List<OrderItemResponse> toResponseList(List<OrderItem> orderItemList);

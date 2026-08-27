@@ -2,6 +2,7 @@ package com.example.minicommerce.controller;
 
 
 import com.example.minicommerce.dto.OrderRequest;
+import com.example.minicommerce.dto.OrderResponse;
 import com.example.minicommerce.entity.Order;
 import com.example.minicommerce.entity.User;
 import com.example.minicommerce.enums.OrderStatus;
@@ -21,23 +22,23 @@ public class OrderController {
     }
 
     @GetMapping("")
-    public List<Order> getAllOrders(){
+    public List<OrderResponse> getAllOrders(){
         return orderService.getAllOrders();
     }
     @GetMapping("/{id}")
-    public Order getById(@PathVariable Long id){
+    public OrderResponse getById(@PathVariable Long id){
         return orderService.getById(id);
     }
     @PostMapping("")
-    public Order create(@RequestBody OrderRequest orderRequest){
-        return orderService.create(orderRequest);
+    public OrderResponse create(@RequestBody OrderRequest orderRequest){
+        return orderService.create(orderRequest, null);
     }
     @GetMapping("/user")
-    public List<Order> getUserOrder(User user){
+    public List<OrderResponse> getUserOrder(User user){
         return orderService.getUserOrders(user);
     }
     @PatchMapping("{id}/status")
-    public Order updateStatus(@PathVariable Long id, @RequestBody OrderStatus status){
+    public OrderResponse updateStatus(@PathVariable Long id, @RequestBody OrderStatus status){
         return orderService.updateStatus(id, status);
     }
 }

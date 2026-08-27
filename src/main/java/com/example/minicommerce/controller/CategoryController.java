@@ -1,6 +1,7 @@
 package com.example.minicommerce.controller;
 
 import com.example.minicommerce.dto.CategoryRequest;
+import com.example.minicommerce.dto.CategoryResponse;
 import com.example.minicommerce.entity.Category;
 import com.example.minicommerce.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +18,12 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
     @GetMapping("")
-    public List<Category> getAllCategories(){
+    public List<CategoryResponse> getAllCategories(){
         return  categoryService.getAllCategories();
 
     }
     @GetMapping("/{id}")
-    public Category getById(@PathVariable Long id){
+    public CategoryResponse getById(@PathVariable Long id){
         return categoryService.getById(id);
     }
     @DeleteMapping("/{id}")
@@ -30,7 +31,7 @@ public class CategoryController {
         categoryService.delete(id);
     }
     @PostMapping
-    public Category create(@RequestBody CategoryRequest category){
+    public CategoryResponse create(@RequestBody CategoryRequest category){
         return categoryService.create(category);
     }
 

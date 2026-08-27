@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(uses = CategoryMapper.class)
+@Mapper(componentModel = "spring",uses = CategoryMapper.class)
 public interface ProductMapper {
     ProductResponse toResponse(Product product);
     List<ProductResponse> toResponseList(List<Product> products);
