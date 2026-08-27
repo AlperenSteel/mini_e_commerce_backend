@@ -10,6 +10,8 @@ import com.example.minicommerce.repository.CategoryRepository;
 import com.example.minicommerce.repository.ProductRepository;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,8 +44,8 @@ public class ProductService {
         return productMapper.toResponse(productRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Bu id'ye sahioProduct bulunamadı")));
     }
-    public List<ProductResponse> getAllProducts(){
-        return productMapper.toResponseList(productRepository.findAll());
+    public Page<ProductResponse> getAllProducts(Pageable pageable){
+        return productRepository.findAll(pageable).map(productMapper::toResponse);
     }
     public void deleteProduct(Long id){
         productRepository.deleteById(id);

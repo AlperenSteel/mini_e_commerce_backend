@@ -9,13 +9,14 @@ import com.example.minicommerce.enums.OrderStatus;
 import com.example.minicommerce.repository.OrderRepository;
 import com.example.minicommerce.service.OrderService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@Valid
 public class OrderController {
     private final OrderService orderService;
 
@@ -24,8 +25,8 @@ public class OrderController {
     }
 
     @GetMapping("")
-    public List<OrderResponse> getAllOrders(){
-        return orderService.getAllOrders();
+    public Page<OrderResponse> getAllOrders(Pageable pageable){
+        return orderService.getAllOrders(pageable);
     }
     @GetMapping("/{id}")
     public OrderResponse getById(@PathVariable Long id){
@@ -40,7 +41,7 @@ public class OrderController {
         return orderService.getUserOrders(user);
     }
     @PatchMapping("{id}/status")
-    public OrderResponse updateStatus(@Valid @PathVariable Long id, @RequestBody OrderStatus status){
+    public OrderResponse updateStatus(@PathVariable Long id, @RequestBody OrderStatus status){
         return orderService.updateStatus(id, status);
     }
 }

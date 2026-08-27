@@ -14,6 +14,8 @@ import com.example.minicommerce.mapper.OrderMapper;
 import com.example.minicommerce.repository.OrderRepository;
 import com.example.minicommerce.repository.ProductRepository;
 import com.example.minicommerce.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -59,8 +61,8 @@ public class OrderService {
         return orderMapper.toResponse(orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bu id de Order yok")));
     }
-    public List<OrderResponse> getAllOrders(){
-        return orderMapper.toResponseList(orderRepository.findAll());
+    public Page<OrderResponse> getAllOrders(Pageable pageable){
+        return orderRepository.findAll(pageable).map(orderMapper::toResponse);
     }
     public List<OrderResponse> getUserOrders(User user){
         return orderMapper.toResponseList(orderRepository.findAllByUser(user));

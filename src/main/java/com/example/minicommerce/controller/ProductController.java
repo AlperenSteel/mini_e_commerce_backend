@@ -6,9 +6,10 @@ import com.example.minicommerce.dto.ProductResponse;
 import com.example.minicommerce.entity.Product;
 import com.example.minicommerce.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 
 @RestController
@@ -19,9 +20,11 @@ public class ProductController {
     public ProductController(ProductService productService){
         this.productService = productService;
     }
+
+    // PAGEABLE gerekli çünkü ----> tamamını getirme performans kötü olur
     @GetMapping("")
-    public List<ProductResponse> getAllProducts(){
-        return productService.getAllProducts();
+    public Page<ProductResponse> getAllProducts(Pageable pageable){
+        return productService.getAllProducts(pageable);
     }
     @GetMapping("/{id}")
     public ProductResponse getById(@PathVariable Long id){
