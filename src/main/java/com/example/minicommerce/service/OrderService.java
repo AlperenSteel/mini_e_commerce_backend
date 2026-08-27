@@ -13,7 +13,6 @@ import com.example.minicommerce.exception.ResourceNotFoundException;
 import com.example.minicommerce.mapper.OrderMapper;
 import com.example.minicommerce.repository.OrderRepository;
 import com.example.minicommerce.repository.ProductRepository;
-import com.example.minicommerce.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,14 +24,12 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderMapper orderMapper;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository,
+    public OrderService(OrderRepository orderRepository,
                         ProductRepository productRepository, OrderMapper orderMapper){
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderMapper = orderMapper;
     }
