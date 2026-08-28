@@ -1,6 +1,5 @@
 package com.example.minicommerce.service;
 
-
 import com.example.minicommerce.dto.OrderItemRequest;
 import com.example.minicommerce.dto.OrderRequest;
 import com.example.minicommerce.dto.OrderResponse;
@@ -14,11 +13,13 @@ import com.example.minicommerce.mapper.OrderMapper;
 import com.example.minicommerce.repository.OrderRepository;
 import com.example.minicommerce.repository.ProductRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
+import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 public class OrderService {
@@ -28,18 +29,18 @@ public class OrderService {
     private final OrderMapper orderMapper;
 
     public OrderService(OrderRepository orderRepository,
-                        ProductRepository productRepository, OrderMapper orderMapper){
+                        ProductRepository productRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.orderMapper = orderMapper;
     }
-    public OrderResponse create(OrderRequest orderRequest, User user){
 
+    public OrderResponse create(OrderRequest orderRequest, User user) {
         Order order = new Order();
         order.setUser(user);
-        // TODO SOR BURAYI
-        List<OrderItem> orderItemlist = new ArrayList<>();
-        for(OrderItemRequest orderItems: orderRequest.getItems()){
+
+        List<OrderItem> orderItemList = new ArrayList<>();
+        for (OrderItemRequest orderItems : orderRequest.getItems()) {
             Product product = productRepository.findById(orderItems.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("Bu product bulunamadı"));
             OrderItem orderItem = new OrderItem();
@@ -47,26 +48,43 @@ public class OrderService {
             orderItem.setProduct(product);
             orderItem.setOrderPrice(product.getPrice());
             orderItem.setOrder(order);
-            orderItemlist.add(orderItem);
+            orderItemList.add(orderItem);
         }
-        order.setItems(orderItemlist);
+        order.setItems(orderItemList);
         orderRepository.save(order);
+        return toOrderResponse(order);
+    }
 
-        return orderMapper.toResponse(order);
+    public OrderResponse getById(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Bu id de Order yok"));
+        return toOrderResponse(order);
     }
-    public OrderResponse getById(Long id){
-        return orderMapper.toResponse(orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Bu id de Order yok")));
+
+    public Page<OrderResponse> getAllOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable).map(this::toOrderResponse);
     }
-    public Page<OrderResponse> getAllOrders(Pageable pageable){
-        return orderRepository.findAll(pageable).map(orderMapper::toResponse);
-    }
-    public List<OrderResponse> getUserOrders(User user){
+
+    public List<OrderResponse> getUserOrders(User user) {
         return orderMapper.toResponseList(orderRepository.findAllByUser(user));
     }
-    public OrderResponse updateStatus(Long id, OrderStatus status){
-        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Bu Order bulunamadı"));
+
+    public OrderResponse updateStatus(Long id, OrderStatus status) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Bu Order bulunamadı"));
         order.setStatus(status);
-        return orderMapper.toResponse(orderRepository.save(order));
+        return toOrderResponse(orderRepository.save(order));
+    }
+
+    private OrderResponse toOrderResponse(Order order) {
+        OrderResponse response = orderMapper.toResponse(order);
+        response.setTotalPrice(calculateTotal(order));
+        return response;
+    }
+
+    private double calculateTotal(Order order) {
+        return order.getItems().stream()
+                .mapToDouble(item -> item.getOrderPrice() * item.getQuantity())
+                .sum();
     }
 }

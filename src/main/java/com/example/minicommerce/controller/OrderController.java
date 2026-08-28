@@ -3,15 +3,13 @@ package com.example.minicommerce.controller;
 
 import com.example.minicommerce.dto.OrderRequest;
 import com.example.minicommerce.dto.OrderResponse;
-import com.example.minicommerce.entity.Order;
 import com.example.minicommerce.entity.User;
 import com.example.minicommerce.enums.OrderStatus;
-import com.example.minicommerce.repository.OrderRepository;
 import com.example.minicommerce.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 

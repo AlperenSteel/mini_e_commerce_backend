@@ -5,7 +5,6 @@ import com.example.minicommerce.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-
+//TODO
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findAllByUser(User user);
 }

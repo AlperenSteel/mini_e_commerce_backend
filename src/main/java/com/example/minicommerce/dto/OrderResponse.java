@@ -18,4 +18,6 @@ public class OrderResponse {
     private LocalDateTime createdAt;
     private OrderStatus status;
     private List<OrderItemResponse> items;
+
+    private Double totalPrice;
 }
