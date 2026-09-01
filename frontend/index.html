@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniCommerce — Online Mağaza</title>
+  <meta name="description" content="MiniCommerce — kaliteli ürünleri en iyi fiyatlarla keşfedin.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ─── Toast ─────────────────────────────────────────────── -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<!-- ─── Global Modal ──────────────────────────────────────── -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-title"></span>
+      <button class="drawer-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ─── Cart Overlay ──────────────────────────────────────── -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ─── Cart Drawer ───────────────────────────────────────── -->
+<div class="cart-drawer" id="cart-drawer">
+  <div class="drawer-head">
+    <span class="drawer-title">🛒 Sepetim</span>
+    <button class="drawer-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="drawer-body" id="cart-body">
+    <div class="empty" style="padding:60px 20px">
+      <div class="empty-ico">🛒</div>
+      <div class="empty-title">Sepet boş</div>
+      <div class="empty-sub">Ürün eklemek için kataloğa göz atın</div>
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <div class="cart-summary-row">
+      <span>Ara toplam</span>
+      <span id="cart-total-val">₺0.00</span>
+    </div>
+    <div class="divider"></div>
+    <div class="cart-total-row">
+      <span class="cart-total-label">Toplam</span>
+      <span class="cart-total-val" id="cart-total-val">₺0.00</span>
+    </div>
+    <button class="btn btn-primary btn-full" id="checkout-btn" onclick="checkout()" disabled>
+      ✅ Siparişi Tamamla
+    </button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     STORE WRAPPER
+════════════════════════════════════════════════════════════ -->
+<div id="store-wrapper">
+
+  <!-- Store Nav -->
+  <nav class="store-nav">
+    <div class="nav-logo" onclick="storeNavigate('home')">
+      <div class="nav-logo-icon">🛍️</div>
+      MiniCommerce
+    </div>
+
+    <div class="nav-links">
+      <div class="nav-link active" data-sp="home">Ana Sayfa</div>
+      <div class="nav-link" data-sp="shop">Ürünler</div>
+      <div class="nav-link" data-sp="myorders">Siparişlerim</div>
+    </div>
+
+    <div class="nav-right">
+      <button class="nav-admin-btn" onclick="goAdmin()">⚙️ Yönetici Paneli</button>
+      <button class="nav-cart-btn" onclick="toggleCart()">
+        🛒 Sepet
+        <span class="cart-badge" id="cart-badge">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Store Main -->
+  <main class="store-main">
+
+    <!-- ─── HOME PAGE ─────────────────────────────────────── -->
+    <div class="store-page active" id="sp-home">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-grid"></div>
+        <div class="hero-content">
+          <div class="hero-tag">
+            ✨ Yeni sezon ürünler geldi
+          </div>
+          <h1 class="hero-title">
+            Alışverişin<br>
+            <span class="gradient">yeni adresi</span>
+          </h1>
+          <p class="hero-sub">
+            Binlerce ürün arasından en iyisini seçin.
+            Hızlı teslimat, güvenli ödeme, müşteri memnuniyeti garantisi.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" onclick="storeNavigate('shop')">
+              🛍️ Alışverişe Başla
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="document.getElementById('featured-section').scrollIntoView({behavior:'smooth'})">
+              Öne Çıkanlar ↓
+            </button>
+          </div>
+
+          <div class="hero-stats">
+            <div>
+              <div class="hero-stat-value" id="home-prod-count">—</div>
+              <div class="hero-stat-label">Ürün çeşidi</div>
+            </div>
+            <div style="width:1px;height:40px;background:var(--border)"></div>
+            <div>
+              <div class="hero-stat-value" id="home-cat-count">—</div>
+              <div class="hero-stat-label">Kategori</div>
+            </div>
+            <div style="width:1px;height:40px;background:var(--border)"></div>
+            <div>
+              <div class="hero-stat-value">%100</div>
+              <div class="hero-stat-label">Müşteri memnuniyeti</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Categories Section -->
+      <section class="section" style="padding-bottom:0">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Kategoriler</h2>
+            <p class="section-sub">İlgilendiğiniz kategoriyi seçin</p>
+          </div>
+        </div>
+        <div class="category-chips" id="home-cat-chips">
+          <!-- rendered by JS -->
+        </div>
+      </section>
+
+      <!-- Featured Products -->
+      <section class="section" id="featured-section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Öne Çıkan Ürünler</h2>
+            <p class="section-sub">En çok tercih edilen ürünlerimiz</p>
+          </div>
+          <button class="btn btn-ghost" onclick="storeNavigate('shop')">Tümünü gör →</button>
+        </div>
+        <div class="product-grid-store" id="featured-grid">
+          <div class="skeleton sk-card"></div>
+          <div class="skeleton sk-card"></div>
+          <div class="skeleton sk-card"></div>
+          <div class="skeleton sk-card"></div>
+        </div>
+      </section>
+
+      <!-- CTA Banner -->
+      <section class="section" style="padding-top:0">
+        <div style="
+          background:linear-gradient(135deg,rgba(124,92,252,.15),rgba(167,139,250,.08));
+          border:1px solid var(--border-accent);
+          border-radius:var(--r-xl);
+          padding:60px 48px;
+          text-align:center;
+          position:relative;overflow:hidden;
+        ">
+          <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(124,92,252,.12),transparent);pointer-events:none"></div>
+          <h2 style="font-size:clamp(24px,3vw,40px);font-weight:900;letter-spacing:-.8px;margin-bottom:16px;position:relative">
+            Aradığınız ürünü<br>hemen bulun 🔍
+          </h2>
+          <p style="color:var(--text-2);font-size:16px;margin-bottom:28px;position:relative">
+            Yüzlerce ürün arasında kolayca gezinin ve sepetinize ekleyin.
+          </p>
+          <button class="btn btn-primary btn-lg" onclick="storeNavigate('shop')" style="position:relative">
+            🛍️ Tüm Ürünleri Gör
+          </button>
+        </div>
+      </section>
+
+    </div><!-- /sp-home -->
+
+    <!-- ─── SHOP PAGE ──────────────────────────────────────── -->
+    <div class="store-page" id="sp-shop">
+      <div class="products-layout">
+        <div class="section-header" style="margin-bottom:24px">
+          <div>
+            <h2 class="section-title">Ürün Kataloğu</h2>
+            <p class="section-sub">Tüm ürünlerimizi keşfedin</p>
+          </div>
+        </div>
+
+        <!-- Category Chips -->
+        <div class="category-chips" id="shop-cats">
+          <!-- rendered by JS -->
+        </div>
+
+        <!-- Toolbar -->
+        <div class="products-toolbar">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input
+              type="search"
+              placeholder="Ürün ara..."
+              oninput="onShopSearch(this.value)"
+              id="shop-search-input"
+            >
+          </div>
+          <span class="products-count" id="shop-count"></span>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="product-grid-store" id="shop-grid">
+          <div class="skeleton sk-card"></div>
+          <div class="skeleton sk-card"></div>
+          <div class="skeleton sk-card"></div>
+          <div class="skeleton sk-card"></div>
+          <div class="skeleton sk-card"></div>
+          <div class="skeleton sk-card"></div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="shop-pagination"></div>
+      </div>
+    </div><!-- /sp-shop -->
+
+    <!-- ─── DETAIL PAGE ────────────────────────────────────── -->
+    <div class="store-page" id="sp-detail">
+      <!-- Rendered dynamically by renderDetailPage() -->
+    </div>
+
+    <!-- ─── MY ORDERS PAGE ────────────────────────────────── -->
+    <div class="store-page" id="sp-myorders">
+      <div class="products-layout">
+        <div class="section-header" style="margin-bottom:28px">
+          <div>
+            <h2 class="section-title">Siparişlerim</h2>
+            <p class="section-sub">Tüm sipariş geçmişiniz</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadMyOrders()">🔄 Yenile</button>
+        </div>
+        <div id="myorders-content">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+
+  </main><!-- /store-main -->
+
+</div><!-- /store-wrapper -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     ADMIN WRAPPER
+════════════════════════════════════════════════════════════ -->
+<div id="admin-wrapper">
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sb-logo">
+        <div class="sb-logo-inner">
+          <span style="font-size:20px">🛍️</span>
+          MiniCommerce
+        </div>
+        <span class="sb-logo-pill">Admin</span>
+        <div class="sb-back" onclick="goStore()">← Mağazaya dön</div>
+      </div>
+
+      <nav class="sb-nav">
+        <div class="sb-section">Genel</div>
+        <div class="sb-item active" data-ap="dashboard"><span class="sb-icon">📊</span> Dashboard</div>
+
+        <div class="sb-section">Katalog</div>
+        <div class="sb-item" data-ap="products"><span class="sb-icon">📦</span> Ürünler</div>
+        <div class="sb-item" data-ap="categories"><span class="sb-icon">🏷️</span> Kategoriler</div>
+
+        <div class="sb-section">Satış</div>
+        <div class="sb-item" data-ap="orders"><span class="sb-icon">🧾</span> Siparişler</div>
+
+        <div class="sb-section">Üyeler</div>
+        <div class="sb-item" data-ap="users"><span class="sb-icon">👥</span> Kullanıcılar</div>
+      </nav>
+
+      <div class="sb-foot">
+        <div class="health-pill">
+          <div class="hdot" id="health-dot"></div>
+          <span id="health-txt">Kontrol ediliyor...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Admin Main -->
+    <div class="admin-main">
+
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <span class="admin-topbar-title" id="admin-topbar-title">Dashboard</span>
+        <button class="btn btn-ghost btn-sm" onclick="goStore()">← Mağazaya dön</button>
+      </header>
+
+      <!-- ── DASHBOARD PAGE ─────────────────────────────────── -->
+      <div class="admin-page active" id="ap-dashboard">
+        <div class="stats-row">
+          <div class="astat">
+            <div class="astat-ico">📦</div>
+            <div class="astat-val" id="adstat-prod">—</div>
+            <div class="astat-lbl">Toplam Ürün</div>
+          </div>
+          <div class="astat">
+            <div class="astat-ico">🏷️</div>
+            <div class="astat-val" id="adstat-cats">—</div>
+            <div class="astat-lbl">Kategori</div>
+          </div>
+          <div class="astat">
+            <div class="astat-ico">🧾</div>
+            <div class="astat-val" id="adstat-orders">—</div>
+            <div class="astat-lbl">Sipariş</div>
+          </div>
+          <div class="astat">
+            <div class="astat-ico">👥</div>
+            <div class="astat-val" id="adstat-users">—</div>
+            <div class="astat-lbl">Kullanıcı</div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden">
+          <div style="padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:15px;font-weight:800">Son Siparişler</span>
+            <button class="btn btn-ghost btn-sm" onclick="adminNavigate('orders')">Tümü →</button>
+          </div>
+          <div class="tbl-wrap" style="border:none;border-radius:0">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th><th>Tarih</th><th>Durum</th><th>Tutar</th><th>Kalem</th>
+                </tr>
+              </thead>
+              <tbody id="admin-recent-orders">
+                <tr><td colspan="5" style="text-align:center;padding:30px"><div class="spinner" style="margin:0 auto"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PRODUCTS PAGE ──────────────────────────────────── -->
+      <div class="admin-page" id="ap-products">
+        <div class="page-head">
+          <div>
+            <h2>Ürünler</h2>
+            <p>Tüm ürünleri yönet</p>
+          </div>
+          <button class="btn btn-primary" onclick="openNewProductModal()">+ Yeni Ürün</button>
+        </div>
+
+        <div class="admin-pg" id="admin-prod-grid">
+          <!-- rendered by JS -->
+        </div>
+        <div class="pagination" id="admin-prod-pg"></div>
+      </div>
+
+      <!-- ── CATEGORIES PAGE ────────────────────────────────── -->
+      <div class="admin-page" id="ap-categories">
+        <div class="page-head">
+          <div>
+            <h2>Kategoriler</h2>
+            <p>Ürün kategorilerini yönet</p>
+          </div>
+          <button class="btn btn-primary" onclick="openNewCategoryModal()">+ Yeni Kategori</button>
+        </div>
+
+        <div class="cat-grid" id="admin-cats-grid">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+      <!-- ── ORDERS PAGE ─────────────────────────────────────── -->
+      <div class="admin-page" id="ap-orders">
+        <div class="page-head">
+          <div>
+            <h2>Siparişler</h2>
+            <p>Tüm siparişleri görüntüle ve yönet</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadAdminOrders(S.adminOrders.page)">🔄 Yenile</button>
+        </div>
+
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sipariş No</th>
+                <th>Tarih</th>
+                <th>Durum</th>
+                <th>Tutar</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="admin-orders-body">
+              <tr><td colspan="5" style="text-align:center;padding:30px"><div class="spinner" style="margin:0 auto"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="admin-orders-pg"></div>
+      </div>
+
+      <!-- ── USERS PAGE ──────────────────────────────────────── -->
+      <div class="admin-page" id="ap-users">
+        <div class="page-head">
+          <div>
+            <h2>Kullanıcılar</h2>
+            <p>Sisteme kayıtlı tüm kullanıcılar</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadAdminUsers()">🔄 Yenile</button>
+        </div>
+
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Kullanıcı Adı</th>
+                <th>E-posta</th>
+                <th>Rol / İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-body">
+              <tr><td colspan="4" style="text-align:center;padding:30px"><div class="spinner" style="margin:0 auto"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /admin-main -->
+  </div><!-- /admin-layout -->
+</div><!-- /admin-wrapper -->
+
+<script src="app.js"></script>
+</body>
+</html>

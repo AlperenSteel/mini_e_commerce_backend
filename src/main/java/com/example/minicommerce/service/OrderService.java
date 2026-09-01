@@ -9,6 +9,7 @@ import com.example.minicommerce.entity.OrderItem;
 import com.example.minicommerce.entity.Product;
 import com.example.minicommerce.entity.User;
 import com.example.minicommerce.enums.OrderStatus;
+import com.example.minicommerce.exception.InsufficientStockException;
 import com.example.minicommerce.exception.ResourceNotFoundException;
 import com.example.minicommerce.mapper.OrderMapper;
 import com.example.minicommerce.mapper.OrderSummaryMapper;
@@ -47,12 +48,17 @@ public class OrderService {
         for (OrderItemRequest orderItems : orderRequest.getItems()) {
             Product product = productRepository.findById(orderItems.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("Bu product bulunamadı"));
+            if(product.getStock() < orderItems.getQuantity()){
+                throw new InsufficientStockException(product.getName() + " için yeterli stok yok" );
+            }
             OrderItem orderItem = new OrderItem();
             orderItem.setQuantity(orderItems.getQuantity());
             orderItem.setProduct(product);
             orderItem.setOrderPrice(product.getPrice());
             orderItem.setOrder(order);
             orderItemList.add(orderItem);
+            product.setStock(product.getStock() - orderItems.getQuantity());
+            productRepository.save(product);
         }
         order.setItems(orderItemList);
         orderRepository.save(order);
@@ -89,7 +95,7 @@ public class OrderService {
     private OrderSummaryResponse toOrderSummaryResponse(Order order){
         OrderSummaryResponse response = orderSummaryMapper.toResponse(order);
         response.setTotalPrice(calculateTotal(order));
- 
+
         return response;
     }
     private double calculateTotal(Order order) {
