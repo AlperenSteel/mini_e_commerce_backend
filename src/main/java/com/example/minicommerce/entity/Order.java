@@ -17,11 +17,13 @@ import java.util.List;
 @NoArgsConstructor
 public class Order extends BaseEntity{
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     private LocalDateTime createdAt;
+
+    private Double totalPrice;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PENDING;

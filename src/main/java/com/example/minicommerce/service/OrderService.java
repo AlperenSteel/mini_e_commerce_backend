@@ -21,8 +21,9 @@ import org.springframework.data.domain.Pageable;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 @Service
 public class OrderService {
@@ -40,67 +41,71 @@ public class OrderService {
         this.orderSummaryMapper = orderSummaryMapper;
     }
 
+    //TODO BURAYI ANLAT
     public OrderResponse create(OrderRequest orderRequest, User user) {
         Order order = new Order();
         order.setUser(user);
 
+        Map<Long, Integer> productQuantityMap = new HashMap<>();
+        for(OrderItemRequest item : orderRequest.getItems()){
+            productQuantityMap.merge(item.getProductId(), item.getQuantity(), Integer::sum);
+        }
         List<OrderItem> orderItemList = new ArrayList<>();
-        for (OrderItemRequest orderItems : orderRequest.getItems()) {
-            Product product = productRepository.findById(orderItems.getProductId())
+        List<Product> updatedProducts = new ArrayList<>();
+
+        for(Map.Entry<Long, Integer> entry : productQuantityMap.entrySet()){
+            Long productId = entry.getKey();
+            Integer quantity = entry.getValue();
+
+            Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new ResourceNotFoundException("Bu product bulunamadı"));
-            if(product.getStock() < orderItems.getQuantity()){
-                throw new InsufficientStockException(product.getName() + " için yeterli stok yok" );
+
+            if(product.getStock() < quantity){
+                throw new InsufficientStockException(product.getName() + " için yeterli stok yok");
             }
             OrderItem orderItem = new OrderItem();
-            orderItem.setQuantity(orderItems.getQuantity());
+            orderItem.setQuantity(quantity);
             orderItem.setProduct(product);
-            orderItem.setOrderPrice(product.getPrice());
             orderItem.setOrder(order);
+            orderItem.setOrderPrice(product.getPrice());
             orderItemList.add(orderItem);
-            product.setStock(product.getStock() - orderItems.getQuantity());
-            productRepository.save(product);
+            product.setStock(product.getStock() - quantity);
+            updatedProducts.add(product);
         }
+
+        //TODO SOR: for'da her döngü içinde db ye product'u
+        // güncellemektense bir sefer döngüden sonra tüm productları güncellemek?
+        productRepository.saveAll(updatedProducts);
         order.setItems(orderItemList);
+        order.setTotalPrice(calculateTotal(order));
         orderRepository.save(order);
-        return toOrderResponse(order);
+        return orderMapper.toResponse(order);
     }
 
     public OrderResponse getById(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bu id de Order yok"));
-        return toOrderResponse(order);
+        return orderMapper.toResponse(order);
     }
 
     public Page<OrderResponse> getAllOrders(Pageable pageable) {
-        return orderRepository.findAll(pageable).map(this::toOrderResponse);
+        return orderRepository.findAll(pageable).map(orderMapper::toResponse);
     }
 
     public Page<OrderSummaryResponse> getUserOrders(User user, Pageable pageable) {
-
-        return orderRepository.findAllByUser(user, pageable).map(this::toOrderSummaryResponse);
+        return orderRepository.findAllByUser(user, pageable).map(orderSummaryMapper::toResponse);
     }
 
     public OrderResponse updateStatus(Long id, OrderStatus status) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bu Order bulunamadı"));
         order.setStatus(status);
-        return toOrderResponse(orderRepository.save(order));
+        return orderMapper.toResponse(orderRepository.save(order));
     }
 
-    private OrderResponse toOrderResponse(Order order) {
-        OrderResponse response = orderMapper.toResponse(order);
-        response.setTotalPrice(calculateTotal(order));
-        return response;
-    }
-    private OrderSummaryResponse toOrderSummaryResponse(Order order){
-        OrderSummaryResponse response = orderSummaryMapper.toResponse(order);
-        response.setTotalPrice(calculateTotal(order));
-
-        return response;
-    }
     private double calculateTotal(Order order) {
         return order.getItems().stream()
                 .mapToDouble(item -> item.getOrderPrice() * item.getQuantity())
                 .sum();
     }
-}
+}}

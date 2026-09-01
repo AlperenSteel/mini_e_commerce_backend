@@ -3,6 +3,7 @@ package com.example.minicommerce.controller;
 
 import com.example.minicommerce.dto.OrderRequest;
 import com.example.minicommerce.dto.OrderResponse;
+import com.example.minicommerce.dto.OrderSummaryResponse;
 import com.example.minicommerce.entity.User;
 import com.example.minicommerce.enums.OrderStatus;
 import com.example.minicommerce.service.OrderService;
@@ -35,8 +36,8 @@ public class OrderController {
         return orderService.create(orderRequest, null);
     }
     @GetMapping("/user")
-    public List<OrderResponse> getUserOrder(User user){
-        return orderService.getUserOrders(user);
+    public Page<OrderSummaryResponse> getUserOrder(User user, Pageable pageable){
+        return orderService.getUserOrders(user, pageable);
     }
     @PatchMapping("{id}/status")
     public OrderResponse updateStatus(@PathVariable Long id, @RequestBody OrderStatus status){
