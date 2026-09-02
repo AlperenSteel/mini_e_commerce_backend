@@ -18,8 +18,13 @@ import lombok.Setter;
 // Parametreli constructor'u biz kullanıyoruz kodda register endpoint'i ile olacak.
 public class User extends BaseEntity {
 
+    // B-Tree for the indexing
+    @Column(unique = true)
     private String username;
+
+    @Column(unique = true)
     private String mail;
+
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
