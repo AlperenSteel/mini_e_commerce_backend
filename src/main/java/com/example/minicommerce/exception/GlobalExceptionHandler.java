@@ -1,7 +1,6 @@
 package com.example.minicommerce.exception;
 
 
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -48,5 +47,23 @@ public class GlobalExceptionHandler {
         errorResponse.setStatus(400);
 
         return ResponseEntity.status(400).body(errorResponse);
+    }
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException ex){
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(ex.getMessage());
+        errorResponse.setTimestamp(LocalDateTime.now());
+        errorResponse.setStatus(409);
+
+        return ResponseEntity.status(409).body(errorResponse);
+    }
+    @ExceptionHandler(MailAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleMailAlreadyExistsException(MailAlreadyExistsException ex){
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(ex.getMessage());
+        errorResponse.setTimestamp(LocalDateTime.now());
+        errorResponse.setStatus(409);
+
+        return ResponseEntity.status(409).body(errorResponse);
     }
 }
