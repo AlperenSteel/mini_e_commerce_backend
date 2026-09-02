@@ -5,11 +5,17 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.UUID;
 
 
 @Service
@@ -23,6 +29,9 @@ public class JwtService {
     @Value("${jwt.refresh-expiration}")
     private long refreshExpiration;
 
+    public LocalDateTime getRefreshExpirationDate() {
+        return LocalDateTime.now().plus(refreshExpiration, ChronoUnit.MILLIS);
+    }
 
     // String olarak değil de SecretKey tipinde istiyor
     private SecretKey getSigningKey(){
@@ -37,6 +46,9 @@ public class JwtService {
                 .expiration(new Date(System.currentTimeMillis() + accessExpiration))
                 .signWith(getSigningKey())
                 .compact();
+    }
+    public String generateRefreshToken() {
+        return UUID.randomUUID().toString();
     }
     public String extractUsername(String token){
         return Jwts.parser()
@@ -56,6 +68,5 @@ public class JwtService {
         } catch (JwtException e){
             return false;
         }
-
     }
 }
