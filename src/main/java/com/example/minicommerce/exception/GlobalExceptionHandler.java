@@ -66,4 +66,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(409).body(errorResponse);
     }
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(ex.getMessage());
+        errorResponse.setTimestamp(LocalDateTime.now());
+        errorResponse.setStatus(401);
+        return ResponseEntity.status(401).body(errorResponse);
+    }
 }
