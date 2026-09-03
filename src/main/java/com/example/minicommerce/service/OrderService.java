@@ -9,6 +9,7 @@ import com.example.minicommerce.entity.OrderItem;
 import com.example.minicommerce.entity.Product;
 import com.example.minicommerce.entity.User;
 import com.example.minicommerce.enums.OrderStatus;
+import com.example.minicommerce.enums.Role;
 import com.example.minicommerce.exception.InsufficientStockException;
 import com.example.minicommerce.exception.ResourceNotFoundException;
 import com.example.minicommerce.mapper.OrderMapper;
@@ -18,6 +19,8 @@ import com.example.minicommerce.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 
 
 import java.util.ArrayList;
@@ -82,9 +85,15 @@ public class OrderService {
         return orderMapper.toResponse(order);
     }
 
-    public OrderResponse getById(Long id) {
+    @Transactional
+    public OrderResponse getById(Long id, User user) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bu id de Order yok"));
+
+        if (user.getRole() != Role.ADMIN && !order.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Bu siparişe erişim yetkiniz yok");
+        }
+
         return orderMapper.toResponse(order);
     }
 

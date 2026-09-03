@@ -29,8 +29,8 @@ public class OrderController {
         return orderService.getAllOrders(pageable);
     }
     @GetMapping("/{id}")
-    public OrderResponse getById(@PathVariable Long id){
-        return orderService.getById(id);
+    public OrderResponse getById(@PathVariable Long id, @AuthenticationPrincipal User user){
+        return orderService.getById(id, user);
     }
     @PostMapping("")
     public OrderResponse create(@Valid @RequestBody OrderRequest orderRequest, @AuthenticationPrincipal User user){

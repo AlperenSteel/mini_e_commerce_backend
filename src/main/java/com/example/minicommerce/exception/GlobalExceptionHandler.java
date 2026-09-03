@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 //TODO
 @ControllerAdvice
@@ -73,5 +74,13 @@ public class GlobalExceptionHandler {
         errorResponse.setTimestamp(LocalDateTime.now());
         errorResponse.setStatus(401);
         return ResponseEntity.status(401).body(errorResponse);
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage("Bu işlem için yetkiniz yok");
+        errorResponse.setTimestamp(LocalDateTime.now());
+        errorResponse.setStatus(403);
+        return ResponseEntity.status(403).body(errorResponse);
     }
 }
