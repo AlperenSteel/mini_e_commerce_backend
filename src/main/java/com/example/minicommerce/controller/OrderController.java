@@ -9,6 +9,7 @@ import com.example.minicommerce.enums.OrderStatus;
 import com.example.minicommerce.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
@@ -32,11 +33,11 @@ public class OrderController {
         return orderService.getById(id);
     }
     @PostMapping("")
-    public OrderResponse create(@Valid @RequestBody OrderRequest orderRequest){
-        return orderService.create(orderRequest, null);
+    public OrderResponse create(@Valid @RequestBody OrderRequest orderRequest, @AuthenticationPrincipal User user){
+        return orderService.create(orderRequest, user);
     }
     @GetMapping("/user")
-    public Page<OrderSummaryResponse> getUserOrder(User user, Pageable pageable){
+    public Page<OrderSummaryResponse> getUserOrder(@AuthenticationPrincipal User user, Pageable pageable){
         return orderService.getUserOrders(user, pageable);
     }
     @PatchMapping("{id}/status")
