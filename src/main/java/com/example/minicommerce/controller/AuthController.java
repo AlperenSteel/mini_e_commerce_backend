@@ -2,6 +2,7 @@ package com.example.minicommerce.controller;
 
 import com.example.minicommerce.dto.auth.AuthResponse;
 import com.example.minicommerce.dto.auth.LoginRequest;
+import com.example.minicommerce.dto.auth.RefreshRequest;
 import com.example.minicommerce.dto.auth.RegisterRequest;
 import com.example.minicommerce.security.AuthService;
 import jakarta.validation.Valid;
@@ -26,6 +27,10 @@ public class AuthController {
     public AuthResponse login(@Valid @RequestBody LoginRequest loginRequest){
 
         return authService.login(loginRequest);
+    }
+    @PostMapping("/refresh")
+    public AuthResponse refresh(@Valid @RequestBody RefreshRequest refreshRequest){
+        return authService.refresh(refreshRequest);
     }
 
 }

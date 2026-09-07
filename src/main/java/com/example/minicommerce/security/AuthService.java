@@ -2,6 +2,7 @@ package com.example.minicommerce.security;
 
 import com.example.minicommerce.dto.auth.AuthResponse;
 import com.example.minicommerce.dto.auth.LoginRequest;
+import com.example.minicommerce.dto.auth.RefreshRequest;
 import com.example.minicommerce.dto.auth.RegisterRequest;
 import com.example.minicommerce.entity.RefreshToken;
 import com.example.minicommerce.entity.User;
@@ -15,6 +16,8 @@ import com.example.minicommerce.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class AuthService {
@@ -86,6 +89,23 @@ public class AuthService {
         AuthResponse authResponse = new AuthResponse();
         authResponse.setAccessToken(accessToken);
         authResponse.setRefreshToken(refreshToken.getToken());
+        return authResponse;
+    }
+    public AuthResponse refresh(RefreshRequest refreshRequest){
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshRequest.getRefreshToken())
+                .orElseThrow(() -> new ResourceNotFoundException("Refresh token bulunamadı"));
+
+        if(refreshToken.getExpireDate().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("Refresh token süresi dolmuş");
+        }
+        User user = refreshToken.getUser();
+
+        String accessToken = jwtService.generateAccessToken(user);
+
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setAccessToken(accessToken);
+        authResponse.setRefreshToken(refreshRequest.getRefreshToken());
+
         return authResponse;
     }
 
