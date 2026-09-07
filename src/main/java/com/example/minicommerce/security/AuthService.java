@@ -91,6 +91,7 @@ public class AuthService {
         authResponse.setRefreshToken(refreshToken.getToken());
         return authResponse;
     }
+    @Transactional
     public AuthResponse refresh(RefreshRequest refreshRequest){
         RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshRequest.getRefreshToken())
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh token bulunamadı"));
