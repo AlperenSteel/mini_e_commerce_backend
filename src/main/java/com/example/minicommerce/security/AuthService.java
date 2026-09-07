@@ -109,4 +109,10 @@ public class AuthService {
         return authResponse;
     }
 
+    //TODO ACCESS HALA GEÇERLİ ? güvenlik açığı?
+    @Transactional
+    public void logout(User user){
+        refreshTokenRepository.deleteAllByUser(user);
+    }
+
 }

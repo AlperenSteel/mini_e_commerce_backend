@@ -4,8 +4,10 @@ import com.example.minicommerce.dto.auth.AuthResponse;
 import com.example.minicommerce.dto.auth.LoginRequest;
 import com.example.minicommerce.dto.auth.RefreshRequest;
 import com.example.minicommerce.dto.auth.RegisterRequest;
+import com.example.minicommerce.entity.User;
 import com.example.minicommerce.security.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,6 +33,10 @@ public class AuthController {
     @PostMapping("/refresh")
     public AuthResponse refresh(@Valid @RequestBody RefreshRequest refreshRequest){
         return authService.refresh(refreshRequest);
+    }
+    @PostMapping("/logout")
+    public void logout(@AuthenticationPrincipal User user){
+        authService.logout(user);
     }
 
 }
