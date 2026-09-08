@@ -50,5 +50,17 @@ public class ProductService {
     public void deleteProduct(Long id){
         productRepository.deleteById(id);
     }
+    public ProductResponse update(Long id, ProductRequest productRequest){
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product bulunamadı"));
+        product.setName(productRequest.getName());
+        product.setStock(productRequest.getStock());
+        product.setPrice(productRequest.getPrice());
+        product.setDescription(productRequest.getDescription());
+        Category category = categoryRepository.findById(productRequest.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Kategori bulunamadı"));
+        product.setCategory(category);
+        return productMapper.toResponse(productRepository.save(product));
+    }
 
 }
