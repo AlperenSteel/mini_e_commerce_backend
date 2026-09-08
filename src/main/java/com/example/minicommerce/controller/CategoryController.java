@@ -32,8 +32,12 @@ public class CategoryController {
         categoryService.delete(id);
     }
     @PostMapping
-    public CategoryResponse create(@Valid @RequestBody CategoryRequest category){
-        return categoryService.create(category);
+    public CategoryResponse create(@Valid @RequestBody CategoryRequest categoryRequest){
+        return categoryService.create(categoryRequest);
+    }
+    @PutMapping("/{id}")
+    public CategoryResponse update(@PathVariable Long id, @Valid @RequestBody CategoryRequest categoryRequest){
+        return categoryService.update(id, categoryRequest);
     }
 
 

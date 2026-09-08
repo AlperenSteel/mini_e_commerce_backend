@@ -37,6 +37,13 @@ public class CategoryService {
     public void delete(Long id){
         categoryRepository.deleteById(id);
     }
+    public CategoryResponse update(Long id, CategoryRequest request){
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Kategori bulunamadı"));
+        category.setName(request.getName());
+
+        return categoryMapper.toResponse(categoryRepository.save(category));
+    }
 
 
 
