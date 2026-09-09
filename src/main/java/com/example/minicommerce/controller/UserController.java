@@ -4,6 +4,7 @@ import com.example.minicommerce.dto.UserResponse;
 import com.example.minicommerce.entity.User;
 import com.example.minicommerce.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,10 @@ public class UserController {
         @GetMapping("/{id}")
         public UserResponse getById(@PathVariable Long id) {
             return userService.getById(id);
+        }
+        @GetMapping("/me")
+        public UserResponse getMe(@AuthenticationPrincipal User user){
+            return userService.getMe(user);
         }
     }
 

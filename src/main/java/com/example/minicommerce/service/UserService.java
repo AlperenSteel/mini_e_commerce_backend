@@ -29,5 +29,8 @@ public class UserService {
     public List<UserResponse> getAll(){
         return userMapper.toResponseList(userRepository.findAll());
     }
+    public UserResponse getMe(User user){
+        return userMapper.toResponse(user);
+    }
 
 }
