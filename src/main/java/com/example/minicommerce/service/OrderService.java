@@ -73,6 +73,9 @@ public class OrderService {
             orderItem.setOrderPrice(product.getPrice());
             orderItemList.add(orderItem);
             product.setStock(product.getStock() - quantity);
+            if (product.getStock() == 0) {
+                product.setIsActive(false);
+            }
             updatedProducts.add(product);
         }
 

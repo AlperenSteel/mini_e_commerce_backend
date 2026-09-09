@@ -16,5 +16,6 @@ public class ProductResponse {
     private int stock;
     private Double price;
     private CategoryResponse category;
+    private boolean isActive;
 
 }

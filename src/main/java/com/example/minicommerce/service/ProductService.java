@@ -8,8 +8,6 @@ import com.example.minicommerce.exception.ResourceNotFoundException;
 import com.example.minicommerce.mapper.ProductMapper;
 import com.example.minicommerce.repository.CategoryRepository;
 import com.example.minicommerce.repository.ProductRepository;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,11 +39,17 @@ public class ProductService {
         return productMapper.toResponse(productRepository.save(product));
     }
     public ProductResponse getById(Long id){
-        return productMapper.toResponse(productRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Bu id'ye sahioProduct bulunamadı")));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ürün bulunamadı"));
+
+        if (!product.getIsActive()) {
+            throw new ResourceNotFoundException("Ürün bulunamadı");
+        }
+
+        return productMapper.toResponse(product);
     }
     public Page<ProductResponse> getAllProducts(Pageable pageable){
-        return productRepository.findAll(pageable).map(productMapper::toResponse);
+        return productRepository.findAllByIsActiveTrue(pageable).map(productMapper::toResponse);
     }
     public void deleteProduct(Long id){
         productRepository.deleteById(id);
@@ -55,6 +59,10 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product bulunamadı"));
         product.setName(productRequest.getName());
         product.setStock(productRequest.getStock());
+        product.setStock(productRequest.getStock());
+        if (productRequest.getStock() > 0) {
+            product.setIsActive(true);
+        }
         product.setPrice(productRequest.getPrice());
         product.setDescription(productRequest.getDescription());
         Category category = categoryRepository.findById(productRequest.getCategoryId())
