@@ -32,5 +32,4 @@ public class UserService {
     public UserResponse getMe(User user){
         return userMapper.toResponse(user);
     }
-
 }
