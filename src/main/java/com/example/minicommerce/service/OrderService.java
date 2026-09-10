@@ -17,6 +17,7 @@ import com.example.minicommerce.mapper.OrderSummaryMapper;
 import com.example.minicommerce.repository.OrderRepository;
 import com.example.minicommerce.repository.ProductRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,12 +101,14 @@ public class OrderService {
         return orderMapper.toResponse(order);
     }
 
-    public Page<OrderResponse> getAllOrders(Pageable pageable) {
-        return orderRepository.findAll(pageable).map(orderMapper::toResponse);
+    public PagedModel<OrderResponse> getAllOrders(Pageable pageable) {
+        Page<OrderResponse> page = orderRepository.findAll(pageable).map(orderMapper::toResponse);
+        return new PagedModel<>(page);
     }
 
-    public Page<OrderSummaryResponse> getUserOrders(User user, Pageable pageable) {
-        return orderRepository.findAllByUser(user, pageable).map(orderSummaryMapper::toResponse);
+    public PagedModel<OrderSummaryResponse> getUserOrders(User user, Pageable pageable) {
+        Page<OrderSummaryResponse> page = orderRepository.findAllByUser(user, pageable).map(orderSummaryMapper::toResponse);
+        return new PagedModel<>(page);
     }
 
     public OrderResponse updateStatus(Long id, OrderStatus status) {

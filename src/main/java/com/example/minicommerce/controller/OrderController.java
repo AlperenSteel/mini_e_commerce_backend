@@ -9,6 +9,7 @@ import com.example.minicommerce.enums.OrderStatus;
 import com.example.minicommerce.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class OrderController {
     }
 
     @GetMapping("")
-    public Page<OrderResponse> getAllOrders(Pageable pageable){
+    public PagedModel<OrderResponse> getAllOrders(Pageable pageable){
         return orderService.getAllOrders(pageable);
     }
     @GetMapping("/{id}")
@@ -37,7 +38,7 @@ public class OrderController {
         return orderService.create(orderRequest, user);
     }
     @GetMapping("/user")
-    public Page<OrderSummaryResponse> getUserOrder(@AuthenticationPrincipal User user, Pageable pageable){
+    public PagedModel<OrderSummaryResponse> getUserOrder(@AuthenticationPrincipal User user, Pageable pageable){
         return orderService.getUserOrders(user, pageable);
     }
     @PatchMapping("{id}/status")

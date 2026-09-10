@@ -7,6 +7,7 @@ import com.example.minicommerce.entity.Product;
 import com.example.minicommerce.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public class ProductController {
 
     // PAGEABLE gerekli çünkü ----> tamamını getirme performans kötü olur
     @GetMapping("")
-    public Page<ProductResponse> getAllProducts(Pageable pageable){
+    public PagedModel<ProductResponse> getAllProducts(Pageable pageable){
         return productService.getAllProducts(pageable);
     }
     @GetMapping("/{id}")

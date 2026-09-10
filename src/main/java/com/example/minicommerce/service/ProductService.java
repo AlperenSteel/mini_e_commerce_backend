@@ -10,6 +10,7 @@ import com.example.minicommerce.repository.CategoryRepository;
 import com.example.minicommerce.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,8 +49,9 @@ public class ProductService {
 
         return productMapper.toResponse(product);
     }
-    public Page<ProductResponse> getAllProducts(Pageable pageable){
-        return productRepository.findAllByIsActiveTrue(pageable).map(productMapper::toResponse);
+    public PagedModel<ProductResponse> getAllProducts(Pageable pageable){
+        Page<ProductResponse> page = productRepository.findAllByIsActiveTrue(pageable).map(productMapper::toResponse);
+        return new PagedModel<>(page);
     }
     public void deleteProduct(Long id){
         productRepository.deleteById(id);
