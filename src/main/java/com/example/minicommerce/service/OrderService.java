@@ -46,6 +46,7 @@ public class OrderService {
     }
 
     //TODO BURAYI ANLAT
+    @Transactional
     public OrderResponse create(OrderRequest orderRequest, User user) {
         Order order = new Order();
         order.setUser(user);
@@ -55,34 +56,28 @@ public class OrderService {
             productQuantityMap.merge(item.getProductId(), item.getQuantity(), Integer::sum);
         }
         List<OrderItem> orderItemList = new ArrayList<>();
-        List<Product> updatedProducts = new ArrayList<>();
 
         for(Map.Entry<Long, Integer> entry : productQuantityMap.entrySet()){
             Long productId = entry.getKey();
             Integer quantity = entry.getValue();
 
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Bu product bulunamadı"));
-
-            if(product.getStock() < quantity){
+            int updatedRows = productRepository.decreaseStock(productId, quantity);
+            if(updatedRows == 0){
+                Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Bu product bulunamadı"));
                 throw new InsufficientStockException(product.getName() + " için yeterli stok yok");
             }
+
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Bu product bulunamadı"));
             OrderItem orderItem = new OrderItem();
             orderItem.setQuantity(quantity);
             orderItem.setProduct(product);
             orderItem.setOrder(order);
             orderItem.setOrderPrice(product.getPrice());
             orderItemList.add(orderItem);
-            product.setStock(product.getStock() - quantity);
-            if (product.getStock() == 0) {
-                product.setIsActive(false);
-            }
-            updatedProducts.add(product);
         }
 
-        //TODO SOR: for'da her döngü içinde db ye product'u
-        // güncellemektense bir sefer döngüden sonra tüm productları güncellemek?
-        productRepository.saveAll(updatedProducts);
         order.setItems(orderItemList);
         order.setTotalPrice(calculateTotal(order));
         orderRepository.save(order);
