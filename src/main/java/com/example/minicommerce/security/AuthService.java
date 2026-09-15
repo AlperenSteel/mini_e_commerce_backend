@@ -24,15 +24,18 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final RateLimitService rateLimitService;
+
 
     public AuthService(UserRepository userRepository,
                        RefreshTokenRepository refreshTokenRepository,
                        JwtService jwtService,
-                       PasswordEncoder passwordEncoder){
+                       PasswordEncoder passwordEncoder, RateLimitService rateLimitService){
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.rateLimitService = rateLimitService;
     }
 
     @Transactional
@@ -71,12 +74,21 @@ public class AuthService {
     }
     @Transactional
     public AuthResponse login(LoginRequest loginRequest) {
+
+
+        if(!rateLimitService.tryAcquireLoginLock(loginRequest.getUsername())) {
+            throw new TooManyRequestsException("Çok hızlı deneme yaptınız.");
+        }
+
+
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new InvalidCredentialsException("Kullanıcı veya şifre hatalı"));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
             throw new InvalidCredentialsException("Kullanıcı veya şifre hatalı");
         }
+        rateLimitService.releaseLoginLock(loginRequest.getUsername());
+
 
         refreshTokenRepository.deleteAllByUser(user);
 

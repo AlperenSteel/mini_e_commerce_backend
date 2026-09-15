@@ -92,4 +92,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(409).body(errorResponse);
     }
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<ErrorResponse> handleTooManyRequestException(TooManyRequestsException ex){
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(ex.getMessage());
+        errorResponse.setTimestamp(LocalDateTime.now());
+        errorResponse.setStatus(429);
+        return ResponseEntity.status(429).body(errorResponse);
+    }
 }
