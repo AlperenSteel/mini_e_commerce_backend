@@ -83,4 +83,13 @@ public class GlobalExceptionHandler {
         errorResponse.setStatus(403);
         return ResponseEntity.status(403).body(errorResponse);
     }
+    @ExceptionHandler(RegistrationConflictException.class)
+    public ResponseEntity<ErrorResponse> handleRegistrationConflictException(RegistrationConflictException ex){
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(ex.getMessage());
+        errorResponse.setTimestamp(LocalDateTime.now());
+        errorResponse.setStatus(409);
+
+        return ResponseEntity.status(409).body(errorResponse);
+    }
 }

@@ -7,12 +7,10 @@ import com.example.minicommerce.dto.auth.RegisterRequest;
 import com.example.minicommerce.entity.RefreshToken;
 import com.example.minicommerce.entity.User;
 import com.example.minicommerce.enums.Role;
-import com.example.minicommerce.exception.InvalidCredentialsException;
-import com.example.minicommerce.exception.MailAlreadyExistsException;
-import com.example.minicommerce.exception.ResourceNotFoundException;
-import com.example.minicommerce.exception.UsernameAlreadyExistsException;
+import com.example.minicommerce.exception.*;
 import com.example.minicommerce.repository.RefreshTokenRepository;
 import com.example.minicommerce.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +35,6 @@ public class AuthService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-
     @Transactional
     public AuthResponse register(RegisterRequest registerRequest){
         if(userRepository.existsByUsername(registerRequest.getUsername())){
@@ -52,7 +49,12 @@ public class AuthService {
         user.setMail(registerRequest.getMail());
         user.setPasswordHash(hashedPassword);
         user.setRole(Role.USER);
-        userRepository.save(user);
+        try{
+            userRepository.save(user);
+        }catch(DataIntegrityViolationException ex){
+            throw new RegistrationConflictException("Kullanıcı adı veya e-posta zaten kullanılıyor");
+        }
+
         String accessToken = jwtService.generateAccessToken(user);
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(jwtService.generateRefreshToken());
@@ -66,7 +68,6 @@ public class AuthService {
         authResponse.setRefreshToken(refreshToken.getToken());
 
         return(authResponse);
-
     }
     @Transactional
     public AuthResponse login(LoginRequest loginRequest) {
