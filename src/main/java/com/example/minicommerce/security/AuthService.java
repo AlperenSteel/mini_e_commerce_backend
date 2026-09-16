@@ -91,14 +91,15 @@ public class AuthService {
         }
         rateLimitService.releaseLoginLock(loginRequest.getUsername());
 
-        
-        refreshTokenRepository.deleteAllByUser(user);
+
+        refreshTokenRepository.deleteByUserAndDeviceId(user, deviceId);
 
         String accessToken = jwtService.generateAccessToken(user);
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(jwtService.generateRefreshToken());
         refreshToken.setExpireDate(jwtService.getRefreshExpirationDate());
         refreshToken.setUser(user);
+        refreshToken.setDeviceId(deviceId);
         refreshTokenRepository.save(refreshToken);
 
         AuthResponse authResponse = new AuthResponse();
@@ -127,7 +128,11 @@ public class AuthService {
 
     //TODO ACCESS HALA GEÇERLİ ? güvenlik açığı?
     @Transactional
-    public void logout(User user, String devideId){
+    public void logout(User user, String deviceId){
+        refreshTokenRepository.deleteByUserAndDeviceId(user, deviceId);
+    }
+    @Transactional
+    public void logoutAll(User user){
         refreshTokenRepository.deleteAllByUser(user);
     }
 
