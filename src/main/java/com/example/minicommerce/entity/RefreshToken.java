@@ -23,4 +23,6 @@ public class RefreshToken extends BaseEntity {
     private User user;
 
     private LocalDateTime expireDate;
+
+    private String deviceId;
 }

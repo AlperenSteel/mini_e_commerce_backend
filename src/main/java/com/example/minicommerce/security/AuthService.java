@@ -39,7 +39,8 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse register(RegisterRequest registerRequest){
+    public AuthResponse register(RegisterRequest registerRequest, String deviceId){
+
         if(userRepository.existsByUsername(registerRequest.getUsername())){
             throw new UsernameAlreadyExistsException("Bu username zaten kullanılıyor");
         }
@@ -64,6 +65,7 @@ public class AuthService {
         refreshToken.setExpireDate(jwtService.getRefreshExpirationDate());
         refreshToken.setUser(user);
 
+        refreshToken.setDeviceId(deviceId);
         refreshTokenRepository.save(refreshToken);
 
         AuthResponse authResponse = new AuthResponse();
@@ -73,7 +75,7 @@ public class AuthService {
         return(authResponse);
     }
     @Transactional
-    public AuthResponse login(LoginRequest loginRequest) {
+    public AuthResponse login(LoginRequest loginRequest, String deviceId) {
 
 
         if(!rateLimitService.tryAcquireLoginLock(loginRequest.getUsername())) {
@@ -89,7 +91,7 @@ public class AuthService {
         }
         rateLimitService.releaseLoginLock(loginRequest.getUsername());
 
-
+        
         refreshTokenRepository.deleteAllByUser(user);
 
         String accessToken = jwtService.generateAccessToken(user);
@@ -125,7 +127,7 @@ public class AuthService {
 
     //TODO ACCESS HALA GEÇERLİ ? güvenlik açığı?
     @Transactional
-    public void logout(User user){
+    public void logout(User user, String devideId){
         refreshTokenRepository.deleteAllByUser(user);
     }
 
