@@ -10,6 +10,7 @@ import com.example.minicommerce.enums.Role;
 import com.example.minicommerce.exception.*;
 import com.example.minicommerce.repository.RefreshTokenRepository;
 import com.example.minicommerce.repository.UserRepository;
+import org.antlr.v4.runtime.Token;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -78,9 +79,9 @@ public class AuthService {
     public AuthResponse login(LoginRequest loginRequest, String deviceId) {
 
 
-        if(!rateLimitService.tryAcquireLoginLock(loginRequest.getUsername())) {
-            throw new TooManyRequestsException("Çok hızlı deneme yaptınız.");
-        }
+        //if(!rateLimitService.tryAcquireLoginLock(loginRequest.getUsername())) {
+        //    throw new TooManyRequestsException("Çok hızlı deneme yaptınız.");
+        //}
 
 
         User user = userRepository.findByUsername(loginRequest.getUsername())
@@ -91,20 +92,14 @@ public class AuthService {
         }
         //rateLimitService.releaseLoginLock(loginRequest.getUsername());
 
-
-        refreshTokenRepository.deleteByUserAndDeviceId(user, deviceId);
-
         String accessToken = jwtService.generateAccessToken(user);
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setToken(jwtService.generateRefreshToken());
-        refreshToken.setExpireDate(jwtService.getRefreshExpirationDate());
-        refreshToken.setUser(user);
-        refreshToken.setDeviceId(deviceId);
-        refreshTokenRepository.save(refreshToken);
+        String newToken = jwtService.generateRefreshToken();
+        LocalDateTime newExpireDate = jwtService.getRefreshExpirationDate();
+        refreshTokenRepository.upsertRefreshToken(user.getId(),deviceId, newToken, newExpireDate);
 
         AuthResponse authResponse = new AuthResponse();
         authResponse.setAccessToken(accessToken);
-        authResponse.setRefreshToken(refreshToken.getToken());
+        authResponse.setRefreshToken(newToken);
         return authResponse;
     }
     @Transactional
