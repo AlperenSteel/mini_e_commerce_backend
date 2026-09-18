@@ -1,0 +1,1 @@
+CREATE INDEX idx_refresh_token_device_id ON refresh_tokens (device_id);

@@ -1,0 +1,1 @@
+-- Baseline sonrası ilk migration. Flyway artık şemayı buradan yönetiyor.

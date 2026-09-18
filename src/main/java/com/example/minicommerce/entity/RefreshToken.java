@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Table(name = "refresh_tokens",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "device_id"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "device_id"}),
+        indexes = @Index(columnList = "device_id"))
 @NoArgsConstructor
 public class RefreshToken extends BaseEntity {
 

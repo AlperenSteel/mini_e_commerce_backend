@@ -1,0 +1,1 @@
+ALTER TABLE refresh_tokens DROP CONSTRAINT ukpmeu0vjbtnyy4iwi3s5q20mn3;
