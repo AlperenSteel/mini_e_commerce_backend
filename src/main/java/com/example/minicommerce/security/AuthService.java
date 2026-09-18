@@ -89,7 +89,7 @@ public class AuthService {
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
             throw new InvalidCredentialsException("Kullanıcı veya şifre hatalı");
         }
-        rateLimitService.releaseLoginLock(loginRequest.getUsername());
+        //rateLimitService.releaseLoginLock(loginRequest.getUsername());
 
 
         refreshTokenRepository.deleteByUserAndDeviceId(user, deviceId);
@@ -135,5 +135,4 @@ public class AuthService {
     public void logoutAll(User user){
         refreshTokenRepository.deleteAllByUser(user);
     }
-
 }
