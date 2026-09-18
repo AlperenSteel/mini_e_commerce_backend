@@ -31,8 +31,10 @@ public class AuthController {
     }
     @PostMapping("/logout")
     public void logout(@AuthenticationPrincipal User user,
-                       @RequestHeader("X-Device-Id") String deviceId) {
-        authService.logout(user, deviceId);
+                       @RequestHeader("X-Device-Id") String deviceId,
+                       @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7); // "Bearer " kısmını at
+        authService.logout(user, deviceId, token);
     }
     @PostMapping("/logout-all")
     public void logoutAll(@AuthenticationPrincipal User user) {

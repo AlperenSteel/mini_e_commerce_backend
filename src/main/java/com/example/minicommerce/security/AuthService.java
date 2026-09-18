@@ -10,7 +10,6 @@ import com.example.minicommerce.enums.Role;
 import com.example.minicommerce.exception.*;
 import com.example.minicommerce.repository.RefreshTokenRepository;
 import com.example.minicommerce.repository.UserRepository;
-import org.antlr.v4.runtime.Token;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,17 +25,20 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final RateLimitService rateLimitService;
+    private final TokenBlacklistService tokenBlacklistService;
 
 
     public AuthService(UserRepository userRepository,
                        RefreshTokenRepository refreshTokenRepository,
                        JwtService jwtService,
-                       PasswordEncoder passwordEncoder, RateLimitService rateLimitService){
+                       PasswordEncoder passwordEncoder, RateLimitService rateLimitService,
+                       TokenBlacklistService tokenBlacklistService){
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.refreshTokenRepository = refreshTokenRepository;
         this.rateLimitService = rateLimitService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Transactional
@@ -79,9 +81,9 @@ public class AuthService {
     public AuthResponse login(LoginRequest loginRequest, String deviceId) {
 
 
-        //if(!rateLimitService.tryAcquireLoginLock(loginRequest.getUsername())) {
-        //    throw new TooManyRequestsException("Çok hızlı deneme yaptınız.");
-        //}
+        if(!rateLimitService.tryAcquireLoginLock(loginRequest.getUsername())) {
+            throw new TooManyRequestsException("Çok hızlı deneme yaptınız.");
+        }
 
 
         User user = userRepository.findByUsername(loginRequest.getUsername())
@@ -121,10 +123,14 @@ public class AuthService {
         return authResponse;
     }
 
-    //TODO ACCESS HALA GEÇERLİ ? güvenlik açığı?
+
     @Transactional
-    public void logout(User user, String deviceId){
+    public void logout(User user, String deviceId, String accessToken){
         refreshTokenRepository.deleteByUserAndDeviceId(user, deviceId);
+
+        String jti = jwtService.extractJti(accessToken);
+        long remainingMillis = jwtService.getRemainingExpiration(accessToken);
+        tokenBlacklistService.blacklistToken(jti, remainingMillis);
     }
     @Transactional
     public void logoutAll(User user){

@@ -100,4 +100,5 @@ public class GlobalExceptionHandler {
         errorResponse.setStatus(429);
         return ResponseEntity.status(429).body(errorResponse);
     }
+    
 }

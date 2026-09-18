@@ -19,11 +19,14 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter{
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final TokenBlacklistService tokenBlacklistService;
 
 
-    public JwtFilter(JwtService jwtService, UserRepository userRepository){
+    public JwtFilter(JwtService jwtService, UserRepository userRepository,
+                     TokenBlacklistService tokenBlacklistService){
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Override
@@ -37,6 +40,11 @@ public class JwtFilter extends OncePerRequestFilter{
         }
         String token = authHeader.substring(7);
         if (!jwtService.isTokenValid(token)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        String jti = jwtService.extractJti(token);
+        if (tokenBlacklistService.isBlacklisted(jti)) {
             filterChain.doFilter(request, response);
             return;
         }
